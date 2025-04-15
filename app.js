@@ -4,7 +4,7 @@ import express from 'express'
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
-
+import path from 'path';
 import router from './src/routes/index.js';
 import { swaggerServe, swaggerSetup } from './swagger.js';
 import { CORS_ALLOWED_ORIGINS } from './src/config/env.config.js';
@@ -36,6 +36,8 @@ app.use(express.static('public'))
 // Passport Middleware
 app.use(passport.initialize());
 // Cookie Parser
+// app.use(express.static(path.join(process.cwd(), "public")));
+
 app.use(cookieParser())
 app.use(logger); // Custom morgan logger
 // Load Routes

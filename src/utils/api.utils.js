@@ -27,9 +27,7 @@ class ApiResponse {
 
 const asyncHandler = (requestHandler) => {
   return (req, res, next) => {
-    Promise.resolve(requestHandler(req, res, next)).catch((err) => {
-      console.log("error:",err);
-      
+    Promise.resolve(requestHandler(req, res, next)).catch((err) => {      
       next(err)
 
     })

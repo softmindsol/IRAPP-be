@@ -20,7 +20,7 @@ const transporter = nodemailer.createTransport({
 export const userController = {
     createUser: async (req, res) => {
         try {
-            console.log(req.body);
+            const imagePath = req.file ? `/public/temp/${req.file.filename}` : null;
 
             const { error } = validateUser(req.body);
             if (error) {
@@ -45,9 +45,10 @@ export const userController = {
                 username: req.body.username,
                 email: req.body.email,
                 password: hashedPassword,
-                fullName: req.body.fullName,
-                verificationToken
+                verificationToken,
+                image: imagePath, // ✅ add this field in your User model
             });
+
 
             const savedUser = await user.save();
 
@@ -75,7 +76,6 @@ export const userController = {
             });
         } catch (error) {
             res.status(500).json({ success: false, message: 'Server error', error: error.message });
-            console.log(error);
         }
     },
 
@@ -216,7 +216,7 @@ export const userController = {
 
             res.json({ success: true, message: 'Token refreshed' });
         } catch (error) {
-            console.error("Error refreshing token:", error);
+
             res.status(403).json({ message: 'Invalid refresh token', error: error.message });
         }
     },
@@ -224,6 +224,7 @@ export const userController = {
     getUser: async (req, res) => {
         try {
             const { id } = req.params;
+
             const user = await User.findById(id).select('-password -verificationToken');
             if (!user) {
                 return res.status(404).json({ success: false, message: 'User not found' });
@@ -236,11 +237,33 @@ export const userController = {
                     email: user.email,
                     fullName: user.fullName,
                     isVerified: user.isVerified,
+                    image: user.image,
                     createdAt: user.createdAt
                 }
             });
         } catch (error) {
             res.status(500).json({ success: false, message: 'Server error', error: error.message });
+        }
+    },
+
+    updateUser: async (req, res) => {
+        try {
+            const { username, password } = req.body;
+            const { id } = req.params; // from token
+
+            const updateData = { username };
+            if (password) {
+                updateData.password = await bcrypt.hash(password, SALT_ROUNDS);
+            }
+
+            if (req.file) {
+                updateData.image = `public/temp/${req.file.filename}`;
+            }
+
+            const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
+            res.status(200).json({ success: true, message: 'User updated', data: updatedUser });
+        } catch (err) {
+            res.status(500).json({ success: false, message: err.message });
         }
     },
 
