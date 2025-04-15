@@ -25,7 +25,15 @@ const userSchema = new Schema({
         type: String,
         default: null
     },
-
+    role: {
+        type: String,
+        default: 'user',
+        enum: ['admin', 'user']
+    },
+    refreshToken: {
+        type: String,
+        default: null
+    },
     isVerified: {
         type: Boolean,
         default: false

@@ -7,19 +7,23 @@ const userValidationSchema = Joi.object({
         .max(30)
         .required()
         .trim(),
-    
+
     email: Joi.string()
         .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'org'] } })
         .required()
         .trim(),
-    
+
     password: Joi.string()
         .min(6)
         .required(),
-    
+
     fullName: Joi.string()
         .max(50)
-        .trim()
+        .trim(),
+
+    role: Joi.string()
+        .valid('admin', 'user')
+        .required()
 });
 
 export const validateUser = (data) => {
