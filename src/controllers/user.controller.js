@@ -20,7 +20,7 @@ const transporter = nodemailer.createTransport({
 export const userController = {
     createUser: async (req, res) => {
         try {
-            const imagePath = req.file ? `/public/temp/${req.file.filename}` : null;
+            // const imagePath = req.file ? `/public/temp/${req.file.filename}` : null;
 
             const { error } = validateUser(req.body);
             if (error) {
@@ -46,7 +46,7 @@ export const userController = {
                 email: req.body.email,
                 password: hashedPassword,
                 verificationToken,
-                image: imagePath, // ✅ add this field in your User model
+                // image: imagePath, // ✅ add this field in your User model
             });
 
 
@@ -256,9 +256,9 @@ export const userController = {
                 updateData.password = await bcrypt.hash(password, SALT_ROUNDS);
             }
 
-            if (req.file) {
-                updateData.image = `public/temp/${req.file.filename}`;
-            }
+            // if (req.file) {
+            //     updateData.image = `public/temp/${req.file.filename}`;
+            // }
 
             const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
             res.status(200).json({ success: true, message: 'User updated', data: updatedUser });
